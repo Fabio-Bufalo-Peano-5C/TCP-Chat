@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package server;
+package servertcp;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,14 +12,14 @@ import java.net.Socket;
 
 /**
  *
- * @author Hunk501
+ * @author fabio
  */
-public class OnlineListThread implements Runnable {
+public class ListaThreadOnline implements Runnable {
     
-    MainForm main;
+    GUIServer GUI;
     
-    public OnlineListThread(MainForm main){
-        this.main = main;
+    public ListaThreadOnline(GUIServer GUI){
+        this.GUI = GUI;
     }
 
     @Override
@@ -27,14 +27,13 @@ public class OnlineListThread implements Runnable {
         try {
             while(!Thread.interrupted()){
                 String msg = "";
-                for(int x=0; x < main.clientList.size(); x++){
-                    msg = msg+" "+ main.clientList.elementAt(x);
+                for(int i = 0; i < GUI.clientList.size(); i++){
+                    msg = msg+" "+ GUI.clientList.get(i);
                 }
                 
-                for(int x=0; x < main.socketList.size(); x++){
-                    Socket tsoc = (Socket) main.socketList.elementAt(x);
+                for(int i = 0; i < GUI.socketList.size(); i++){
+                    Socket tsoc = (Socket) GUI.socketList.get(i);
                     DataOutputStream dos = new DataOutputStream(tsoc.getOutputStream());
-                    /** CMD_ONLINE [user1] [user2] [user3] **/
                     if(msg.length() > 0){
                         dos.writeUTF("CMD_ONLINE "+ msg);
                     }
@@ -42,10 +41,10 @@ public class OnlineListThread implements Runnable {
                 
                 Thread.sleep(1900);
             }
-        } catch(InterruptedException e){
-            main.appendMessage("[InterruptedException]: "+ e.getMessage());
+        } catch(InterruptedException ex){
+            GUI.appendMessage("[InterruptedException]: "+ ex.getMessage());
         } catch (IOException e) {
-            main.appendMessage("[IOException]: "+ e.getMessage());
+            GUI.appendMessage("[IOException]: "+ e.getMessage());
         }
     }
     
