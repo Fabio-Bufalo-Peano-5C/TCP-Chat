@@ -1,5 +1,5 @@
 
-package server;
+package servertcp;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -7,36 +7,33 @@ import java.net.Socket;
 
 /**
  *
- * @author Hunk501
+ * @author fabio
  */
 public class ServerThread implements Runnable {
     
     ServerSocket server;
-    MainForm main;
-    boolean keepGoing = true;
+    GUIServer GUI;
     
-    public ServerThread(int port, MainForm main){
-        main.appendMessage("[Server]: Starting server in port "+ port);
+    public ServerThread(int porta, GUIServer GUI){
+        GUI.appendMessage("[Server]: Server in avvio sulla porta: "+ porta);
         try {
-            this.main = main;
-            server = new ServerSocket(port);
-            main.appendMessage("[Server]: Server started.!");
+            this.GUI = GUI;
+            server = new ServerSocket(porta);
+            GUI.appendMessage("[Server]: Server avviato!");
         } 
-        catch (IOException e) { main.appendMessage("[IOException]: "+ e.getMessage()); } 
-        catch (Exception e ){ main.appendMessage("[Exception]: "+ e.getMessage()); }
+        catch (IOException ex ) { GUI.appendMessage("[IOException]: "+ ex.getMessage()); } 
+        catch (Exception ex ){ GUI.appendMessage("[Exception]: "+ ex.getMessage()); }
     }
 
     @Override
     public void run() {
         try {
-            while(keepGoing){
+            while(true){
                 Socket socket = server.accept();
-                //main.appendMessage("[Socket]: "+ socket);
-                /** SOcket thread **/
-                new Thread(new SocketThread(socket, main)).start();
+                new Thread(new SocketThread(socket, GUI)).start();
             }
         } catch (IOException e) {
-            main.appendMessage("[ServerThreadIOException]: "+ e.getMessage());
+            GUI.appendMessage("[ServerThreadIOException]: "+ e.getMessage());
         }
     }
     
@@ -44,8 +41,7 @@ public class ServerThread implements Runnable {
     public void stop(){
         try {
             server.close();
-            keepGoing = false;
-            System.out.println("Server is now closed..!");
+            System.out.println("Il server è stato arrestato!");
             System.exit(0);
         } catch (IOException e) {
             System.out.println(e.getMessage());
