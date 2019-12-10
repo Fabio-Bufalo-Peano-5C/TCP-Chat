@@ -4,141 +4,81 @@
  * and open the template in the editor.
  */
 
-package server;
+package servertcp;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
  *
- * @author Hunk501
+ * @author fabio
  */
-public class MainForm extends javax.swing.JFrame {
+public class GUIServer extends javax.swing.JFrame {
     
-    SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss a");
-    Thread t;
+    Thread thread;
     ServerThread serverThread;
-    /** Chat List  **/
-    public Vector socketList = new Vector();
-    public Vector clientList = new Vector();
-    /** File Sharing List **/
-    public Vector clientFileSharingUsername = new Vector();
-    public Vector clientFileSharingSocket = new Vector();
-    /** Server **/
+    public ArrayList socketList = new ArrayList();
+    public ArrayList clientList = new ArrayList();
     ServerSocket server;
     
-    /**
-     * Creates new form MainForm
-     */
-    public MainForm() {
+    public GUIServer() {
         initComponents();
     }
     
     
     public void appendMessage(String msg){
-        Date date = new Date();
-        jTextArea1.append(sdf.format(date) +": "+ msg +"\n");
+        jTextArea1.append("Messaggio: " + msg + "\n");
         jTextArea1.setCaretPosition(jTextArea1.getText().length() - 1);
     }
     
-    /** Setters **/
     public void setSocketList(Socket socket){
         try {
             socketList.add(socket);
             appendMessage("[setSocketList]: Added");
-        } catch (Exception e) { appendMessage("[setSocketList]: "+ e.getMessage()); }
+        } catch (Exception e) { appendMessage("[Lista Socket]: "+ e.getMessage()); }
     }
+    
     public void setClientList(String client){
         try {
             clientList.add(client);
             appendMessage("[setClientList]: Added");
-        } catch (Exception e) { appendMessage("[setClientList]: "+ e.getMessage()); }
-    }
-    public void setClientFileSharingUsername(String user){
-        try {
-            clientFileSharingUsername.add(user);
-        } catch (Exception e) { }
+        } catch (Exception ex) { appendMessage("[Lista Client]: "+ ex.getMessage()); }
     }
     
-    public void setClientFileSharingSocket(Socket soc){
-        try {
-            clientFileSharingSocket.add(soc);
-        } catch (Exception e) { }
-    }
-    
-    /** Getters
-     * 
-     * @param client
-     * @return  **/
     public Socket getClientList(String client){
-        Socket tsoc = null;
-        for(int x=0; x < clientList.size(); x++){
-            if(clientList.get(x).equals(client)){
-                tsoc = (Socket) socketList.get(x);
+        Socket socket = null;
+        for(int i = 0; i < clientList.size(); i++){
+            if(clientList.get(i).equals(client)){
+                socket = (Socket) socketList.get(i);
                 break;
             }
         }
-        return tsoc;
+        return socket;
     }
     
     
     public void removeFromTheList(String client){
         try {
-            for(int x=0; x < clientList.size(); x++){
-                if(clientList.elementAt(x).equals(client)){
-                    clientList.removeElementAt(x);
-                    socketList.removeElementAt(x);
+            for(int i = 0; i < clientList.size(); i++){
+                if(clientList.get(i).equals(client)){
+                    clientList.remove(i);
+                    socketList.remove(i);
                     appendMessage("[Removed]: "+ client);
                     break;
                 }
             }
-        } catch (Exception e) {
-            appendMessage("[RemovedException]: "+ e.getMessage());
+        } catch (Exception ex) {
+            appendMessage("[RemovedException]: "+ ex.getMessage());
         }
-    }
-    
-    public Socket getClientFileSharingSocket(String username){
-        Socket tsoc = null;
-        for(int x=0; x < clientFileSharingUsername.size(); x++){
-            if(clientFileSharingUsername.elementAt(x).equals(username)){
-                tsoc = (Socket) clientFileSharingSocket.elementAt(x);
-                break;
-            }
-        }
-        return tsoc;
-    }
-    
-    
-    /*
-    Remove Client File Sharing List
-    */
-    public void removeClientFileSharing(String username){
-        for(int x=0; x < clientFileSharingUsername.size(); x++){
-            if(clientFileSharingUsername.elementAt(x).equals(username)){
-                try {
-                    clientFileSharingUsername.removeElementAt(x);
-                    clientFileSharingSocket.removeElementAt(x);
-                    appendMessage("[FileSharing]: Removed "+ username);
-                } catch (Exception e) {
-                    appendMessage("[FileSharing]: Unable to Remove "+ username);
-                }
-                break;
-            }
-        }
-    }
-    
-    
+    } 
     
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -153,18 +93,18 @@ public class MainForm extends javax.swing.JFrame {
         setTitle("Server");
         setBackground(new java.awt.Color(0, 0, 0));
 
-        jLabel1.setText("Port:");
+        jLabel1.setText("Porta:");
 
         jTextField1.setText("4444");
 
-        jButton1.setText("Start Server");
+        jButton1.setText("Accendi Server");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Stop Server");
+        jButton2.setText("Spegni Server");
         jButton2.setEnabled(false);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -191,7 +131,7 @@ public class MainForm extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 108, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -216,12 +156,12 @@ public class MainForm extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        int port = Integer.parseInt(jTextField1.getText());
-        serverThread = new ServerThread(port, this);
-        t = new Thread(serverThread);
-        t.start();
+        int porta = Integer.parseInt(jTextField1.getText());
+        serverThread = new ServerThread(porta, this);
+        thread = new Thread(serverThread);
+        thread.start();
         
-        new Thread(new OnlineListThread(this)).start();
+        new Thread(new ListaThreadOnline(this)).start();
         
         jButton1.setEnabled(false);
         jButton2.setEnabled(true);
@@ -229,8 +169,8 @@ public class MainForm extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        int confirm = JOptionPane.showConfirmDialog(null, "Close Server.?");
-        if(confirm == 0){
+        int conferma = JOptionPane.showConfirmDialog(null, "Arrestare il server?");
+        if(conferma == 0){
             serverThread.stop();
         }
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -239,33 +179,9 @@ public class MainForm extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainForm().setVisible(true);
+                new GUIServer().setVisible(true);
             }
         });
     }
